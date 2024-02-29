@@ -337,7 +337,7 @@ eval("var map = {\n\t\"./About\": [\n\t\t\"./src/app/views/About.js\",\n\t\t\"sr
 /******/ 				var scripts = document.getElementsByTagName("script");
 /******/ 				if(scripts.length) {
 /******/ 					var i = scripts.length - 1;
-/******/ 					while (i > -1 && !scriptUrl) scriptUrl = scripts[i--].src;
+/******/ 					while (i > -1 && (!scriptUrl || !/^http(s?):/.test(scriptUrl))) scriptUrl = scripts[i--].src;
 /******/ 				}
 /******/ 			}
 /******/ 		}
@@ -356,15 +356,19 @@ eval("var map = {\n\t\"./About\": [\n\t\t\"./src/app/views/About.js\",\n\t\t\"sr
 /******/ 		
 /******/ 			linkTag.rel = "stylesheet";
 /******/ 			linkTag.type = "text/css";
+/******/ 			if (__webpack_require__.nc) {
+/******/ 				linkTag.nonce = __webpack_require__.nc;
+/******/ 			}
 /******/ 			var onLinkComplete = (event) => {
 /******/ 				// avoid mem leaks.
 /******/ 				linkTag.onerror = linkTag.onload = null;
 /******/ 				if (event.type === 'load') {
 /******/ 					resolve();
 /******/ 				} else {
-/******/ 					var errorType = event && (event.type === 'load' ? 'missing' : event.type);
+/******/ 					var errorType = event && event.type;
 /******/ 					var realHref = event && event.target && event.target.href || fullhref;
-/******/ 					var err = new Error("Loading CSS chunk " + chunkId + " failed.\n(" + realHref + ")");
+/******/ 					var err = new Error("Loading CSS chunk " + chunkId + " failed.\n(" + errorType + ": " + realHref + ")");
+/******/ 					err.name = "ChunkLoadError";
 /******/ 					err.code = "CSS_CHUNK_LOAD_FAILED";
 /******/ 					err.type = errorType;
 /******/ 					err.request = realHref;
@@ -374,6 +378,7 @@ eval("var map = {\n\t\"./About\": [\n\t\t\"./src/app/views/About.js\",\n\t\t\"sr
 /******/ 			}
 /******/ 			linkTag.onerror = linkTag.onload = onLinkComplete;
 /******/ 			linkTag.href = fullhref;
+/******/ 		
 /******/ 		
 /******/ 			if (oldTag) {
 /******/ 				oldTag.parentNode.insertBefore(linkTag, oldTag.nextSibling);
